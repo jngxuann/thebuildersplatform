@@ -295,7 +295,7 @@ a.gh:hover { text-decoration: underline; }
   main { padding: 24px 18px 60px; }
   .row { grid-template-columns: 1fr; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .swipe { transition: none; }
-  #toast { transition: none; }
-         }
+@media (prefers-reduced-motion:reduce){
+  .swipe{transition:none}
+  #toast{transition:none}
+}
