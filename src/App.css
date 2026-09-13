@@ -69,8 +69,8 @@
 
 * { box-sizing: border-box; }
 html, body, #root { margin: 0; min-height: 100%; }
-body { overflow-x: hidden; }
-body { 
+html { overflow-x: hidden; }
+body {
   background: var(--bg); 
   color: var(--ink); 
   font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif; 
@@ -309,7 +309,7 @@ a.gh:hover { text-decoration: underline; }
 }
 @media (max-width: 760px) {
   #app.on { grid-template-columns: 1fr; }
-  aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  aside { position: sticky; top: 0; z-index: 10; height: auto; max-height: 100vh; overflow-y: auto; border-right: 0; border-bottom: 1px solid var(--line); }
   nav { flex-direction: row; flex-wrap: wrap; margin-top: 14px; }
   .me { margin-top: 14px; }
   main { padding: 24px 18px 60px; }
@@ -330,8 +330,7 @@ a.gh:hover { text-decoration: underline; }
   --control-height:42px;
   --muted:var(--ink-3);
 }
-html{overflow-x:hidden}
-body{overflow-x:hidden;line-height:1.55}
+body{line-height:1.55}
 main{max-width:var(--page-max);min-width:0;padding:36px var(--page-pad) 80px}
 aside,main,.page,.grid,.rows,.row,.card,.form-2col,.deck-wrap,.toolbar,.pagehead{min-width:0}
 input,textarea,select{min-height:var(--control-height)}
@@ -384,9 +383,15 @@ textarea{min-height:120px}
 .funding-meta{min-width:0}
 .funding-meta .btn{white-space:normal}
 .resource-grid{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
-.resource-card{cursor:default;height:100%}
-.resource-card h3{max-width:none}
-.resource-detail{min-width:0;overflow-wrap:anywhere}
+.resource-card{cursor:default;height:100%;gap:12px;align-items:stretch}
+.resource-card:hover{border-color:var(--line)}
+.resource-card h3{max-width:none;padding-right:0}
+.resource-card .need.hot{align-self:flex-start}
+.resource-card p{display:block;line-clamp:none;-webkit-line-clamp:none;overflow:visible}
+.resource-detail{min-width:0;overflow-wrap:anywhere;display:grid;gap:2px;padding-top:10px;border-top:1px solid var(--line-2)}
+.resource-detail:first-of-type{padding-top:2px;border-top:0}
+.resource-detail b{font-family:"Space Grotesk",sans-serif;font-size:13px;font-weight:600;color:var(--ink)}
+.resource-detail span{font-size:13px;color:var(--ink-2);line-height:1.45}
 .mentor-filters,.funding-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch}
 .mentor-filters select,.funding-filters select{width:100%;min-width:0}
 .check.compact{margin:0;min-height:var(--control-height)}
@@ -410,7 +415,7 @@ textarea{min-height:120px}
 }
 @media (max-width:900px){
   #app.on{grid-template-columns:1fr}
-  aside{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:18px var(--page-pad)}
+  aside{position:sticky;top:0;z-index:10;width:100%;height:auto;max-height:100vh;overflow-y:auto;border-right:0;border-bottom:1px solid var(--line);padding:18px var(--page-pad)}
   aside .wordmark{max-width:100%;overflow-wrap:anywhere}
   nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:18px;gap:4px}
   nav button{min-height:40px;padding:8px 10px}
