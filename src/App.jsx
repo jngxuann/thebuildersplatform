@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 const STORAGE_KEY = 'thebuildersplatform.v1'
@@ -47,6 +47,56 @@ const peopleOf = (project) => [...new Set([...(project.builders || []), ...(proj
 const initials = (name) => name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase()
 const getSaved = () => { try { const value = JSON.parse(window.localStorage.getItem(STORAGE_KEY)); return value || {} } catch { return {} } }
 
+function CountUp({ end, prefix = '', suffix = '', duration = 1250 }) {
+  const [displayValue, setDisplayValue] = useState(0)
+  const elementRef = useRef(null)
+  const animationRef = useRef(null)
+  const startedRef = useRef(false)
+
+  useEffect(() => {
+    const element = elementRef.current
+    if (!element || startedRef.current) return undefined
+
+    const finish = () => {
+      if (startedRef.current) return
+      startedRef.current = true
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduceMotion) {
+        setDisplayValue(end)
+        return
+      }
+
+      const startedAt = performance.now()
+      const step = (now) => {
+        const progress = Math.min((now - startedAt) / duration, 1)
+        const easedProgress = 1 - ((1 - progress) ** 3)
+        setDisplayValue(Math.round(end * easedProgress))
+        if (progress < 1) animationRef.current = window.requestAnimationFrame(step)
+      }
+      animationRef.current = window.requestAnimationFrame(step)
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        finish()
+        observer.disconnect()
+      }
+    }, { threshold: 0.2 })
+    observer.observe(element)
+
+    return () => {
+      observer.disconnect()
+      if (animationRef.current) window.cancelAnimationFrame(animationRef.current)
+    }
+  }, [duration, end])
+
+  useEffect(() => {
+    if (startedRef.current) setDisplayValue(end)
+  }, [end])
+
+  return <span ref={elementRef} aria-label={`${prefix}${end.toLocaleString('en-SG')}${suffix}`}>{prefix}{displayValue.toLocaleString('en-SG')}{suffix}</span>
+}
+
 function App() {
   const saved = getSaved()
   const [user, setUser] = useState(saved.user || null)
@@ -77,7 +127,7 @@ function App() {
   </main>{selected && <ProjectModal project={selected} user={user} close={() => setSelected(null)} updateProject={updateProject} togglePerson={togglePerson} sponsor={sponsorProject} notify={notify} />}{toast && <div id="toast" className="on">{toast}</div>}</div>
 }
 
-function Signup({ role, setRole, onSubmit, projects }) { return <section id="signup"><div className="left"><div className="wordmark"><img src="/whitespace.png" alt="Whitespace logo" title="Whitespace" />thebuildersplatform</div><div><h1>Build something useful for <mark>Singapore</mark>.</h1><p>Student ideas, practical spaces and the people who can help take them from a first sketch to something real.</p></div><div className="stat-row"><div><b>{projects.length}</b>projects live</div><div><b>{new Set(projects.flatMap(peopleOf)).size}</b>people involved</div><div><b>{projects.reduce((total, project) => total + project.needs.length, 0)}</b>open roles</div></div></div><div className="right"><form onSubmit={onSubmit}><h2>Join the Singapore campus</h2><p className="hint" style={{ marginBottom: 22 }}>Choose how you want to contribute. You can switch roles by signing out.</p><div className="field"><label htmlFor="name">Your name</label><input id="name" name="name" placeholder="e.g. Priya Nair" autoComplete="name" required /></div><div className="roles" role="group" aria-label="Choose a role">{Object.entries(ROLES).map(([id, label]) => <button type="button" className="role" data-role={id} aria-pressed={role === id} key={id} onClick={() => setRole(id)}><span className="sw">{id === 'sponsor' ? '$' : label[0]}</span><span><strong>{label}</strong><span>{roleCopy[id]}</span></span></button>)}</div><button className="btn primary" type="submit" style={{ width: '100%', justifyContent: 'center', padding: 12 }}>Enter thebuildersplatform</button></form></div></section> }
+function Signup({ role, setRole, onSubmit, projects }) { const people = new Set(projects.flatMap(peopleOf)).size; const openRoles = projects.reduce((total, project) => total + project.needs.length, 0); const fundingSought = projects.reduce((total, project) => total + project.goal, 0); return <section id="signup"><div className="left"><div className="wordmark"><img src="/whitespace.png" alt="Whitespace logo" title="Whitespace" />thebuildersplatform</div><div><h1>Build something useful for <mark>Singapore</mark>.</h1><p>Student ideas, practical spaces and the people who can help take them from a first sketch to something real.</p></div><div className="stat-row"><div><b><CountUp end={projects.length} /></b>projects live</div><div><b><CountUp end={people} /></b>people involved</div><div><b><CountUp end={openRoles} /></b>open roles</div><div><b><CountUp end={mentors.length} /></b>mentors</div><div><b><CountUp end={resources.length} /></b>spaces & equipment</div><div><b><CountUp end={fundingSought} prefix="S$" /></b>funding sought</div></div></div><div className="right"><form onSubmit={onSubmit}><h2>Join the Singapore campus</h2><p className="hint" style={{ marginBottom: 22 }}>Choose how you want to contribute. You can switch roles by signing out.</p><div className="field"><label htmlFor="name">Your name</label><input id="name" name="name" placeholder="e.g. Priya Nair" autoComplete="name" required /></div><div className="roles" role="group" aria-label="Choose a role">{Object.entries(ROLES).map(([id, label]) => <button type="button" className="role" data-role={id} aria-pressed={role === id} key={id} onClick={() => setRole(id)}><span className="sw">{id === 'sponsor' ? '$' : label[0]}</span><span><strong>{label}</strong><span>{roleCopy[id]}</span></span></button>)}</div><button className="btn primary" type="submit" style={{ width: '100%', justifyContent: 'center', padding: 12 }}>Enter thebuildersplatform</button></form></div></section> }
 function Sidebar({ user, page, nav, setPage, signOut }) { return <aside><div className="wordmark"><img src="/whitespace.png" alt="Whitespace logo" title="Whitespace" />thebuildersplatform</div><nav>{nav.map(([id, label]) => <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}>{label}</button>)}</nav><div className="me"><b>{user.name}</b><span>{ROLES[user.role]}</span><div><button className="btn quiet small" onClick={signOut}>Sign out</button></div></div></aside> }
 function PageHead({ title, description, action }) { return <div className="pagehead"><div><h1>{title}</h1><p>{description}</p></div>{action}</div> }
 function FilterBar({ options, value, onChange, search, setSearch }) { return <div className="toolbar">{options.map(([id, label]) => <button className={`chip ${value === id ? 'on' : ''}`} key={id} onClick={() => onChange(id)}>{label}</button>)}{setSearch && <input className="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" aria-label="Search" />}</div> }

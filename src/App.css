@@ -166,6 +166,8 @@ label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 14px; }
 .role[aria-pressed="true"] { border-color: var(--mark); box-shadow: inset 0 0 0 1px var(--mark); }
 .stat-row { display: flex; gap: 28px; color: var(--ink-3); font-size: 14px; }
 .stat-row b { display: block; color: var(--ink); font-family: "Space Grotesk"; font-size: 26px; font-weight: 600; }
+.stat-row > div { flex: 1 1 104px; min-width: 104px; }
+.stat-row b span { white-space: nowrap; }
 
 /* App shell */
 #app { display: none; min-height: 100vh; grid-template-columns: 232px 1fr; }
@@ -217,7 +219,7 @@ main { padding: 36px 44px 80px; max-width: 1180px; width: 100%; }
 .status.ongoing { background: var(--green-soft); color: var(--green); }
 .status.onhold { background: var(--amber-soft); color: var(--amber); }
 .status.completed { background: var(--grey-soft); color: var(--ink-2); }
-.card p { color: var(--ink-2); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.card p { color: var(--ink-2); font-size: 14px; display: -webkit-box; line-clamp: 3; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .needs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
 .need { font-size: 12px; padding: 3px 8px; border-radius: 5px; background: var(--grey-soft); color: var(--ink-2); }
 .need.hot { background: var(--mark-soft); color: var(--mark); font-weight: 600; }
@@ -456,6 +458,7 @@ textarea{min-height:120px}
   nav{grid-template-columns:1fr}
   .wordmark{font-size:18px}
   .deck{height:440px}
+}
 @media (prefers-reduced-motion: reduce) {
   .swipe { transition: none; }
   #toast { transition: none; }
