@@ -109,6 +109,36 @@ select {
   background-size: 10px 6px;
 }
 select.btn { padding-right: 36px; }
+.tag-dropdown { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+.tag-dropdown summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height, 42px);
+  padding: 10px 36px 10px 12px;
+  font-size: 14px;
+  color: var(--ink-2);
+  position: relative;
+}
+.tag-dropdown summary::-webkit-details-marker { display: none; }
+.tag-dropdown summary::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 10px;
+  height: 6px;
+  transform: translateY(-50%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 10px 6px;
+  transition: transform .15s ease;
+}
+.tag-dropdown[open] summary::after { transform: translateY(-50%) rotate(180deg); }
+.tag-dropdown[open] summary { border-bottom: 1px solid var(--line); }
+.tag-dropdown .checks { padding: 12px; gap: 6px; }
+.tag-dropdown .check { border: 0; padding: 4px 2px; background: none; }
 input:focus, textarea:focus, select:focus, button:focus-visible, a:focus-visible, [tabindex]:focus-visible { 
   outline: 2px solid var(--blue); 
   outline-offset: 2px; 
